@@ -45,7 +45,7 @@ func main() {
 func janToAsin(jan string,key string)(string,error){
 	//https://sellercentral.amazon.co.jp/fba/profitabilitycalculator/productmatches?searchKey=4549526605444&language=ja_JP&profitcalcToken=gj8%2B3vyvJX1%2Fmwj8jTfkpgFEeZs3M4JMrMbp79QAAAAJAAAAAFvfA1tyYXcAAAAAFVfwLBerPie4v1Ep%2F%2F%2F%2F
 	u := url.Values{}
-	u.Set("searchKey","4549526605444")
+	u.Set("searchKey",jan)
 	u.Add("language","ja_JP")
 	u.Add("profitcalcToken",key)
 	req, _ := http.NewRequest("GET", "https://sellercentral.amazon.co.jp/fba/profitabilitycalculator/productmatches?" + u.Encode(), nil)
