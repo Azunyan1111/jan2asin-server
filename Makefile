@@ -1,2 +1,2 @@
 start:
-	GOOS=linux GOARCH=arm64 go build
+	GOOS=linux GOARCH=arm go build
