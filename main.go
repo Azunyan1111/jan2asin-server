@@ -10,11 +10,15 @@ import (
 	"net/url"
 )
 
+var goToGetKey bool
+var saveKey string
+
 func main() {
 	e := echo.New()
 	e.Use(middleware.CORS())
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	goToGetKey = true
 
 	e.GET("/:jan", func(context echo.Context) error {
 		jan := context.Param("jan")
@@ -22,9 +26,17 @@ func main() {
 			return context.JSON(http.StatusBadRequest,"Bad:" + jan)
 		}
 		// client
-		key,err := getKey()
-		if err != nil{
-			return context.JSON(http.StatusInternalServerError,err.Error())
+		var key string
+		var err error
+		if goToGetKey{
+			key,err = getKey()
+			if err != nil{
+				return context.JSON(http.StatusInternalServerError,err.Error())
+			}
+			saveKey = key
+			goToGetKey = true
+		}else{
+			key = saveKey
 		}
 		asin,err := janToAsin(jan,key)
 		if err != nil{
@@ -55,13 +67,13 @@ func janToAsin(jan string,key string)(string,error){
 	client := new(http.Client)
 	resp, err := client.Do(req)
 	if err != nil{
-		return "",errors.New("API使いすぎ")
+		return "",errors.New("API使いすぎ" + err.Error())
 	}
 
 	var apiJson ApiJson
 
 	if err := json.NewDecoder(resp.Body).Decode(&apiJson); err != nil{
-		return "",errors.New("正しいJSON返って無いでしょ。てかパース無理だった。")
+		return "",errors.New("正しいJSON返って無いでしょ。てかパース無理だった。" + err.Error())
 	}
 	return apiJson.Data[0].Asin,nil
 }
